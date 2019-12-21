@@ -113,3 +113,10 @@ for i in range(500):
         break
    
 print("MSE => ",MSE)     
+
+with open('new_weights.txt', 'w') as f:
+    for item in nn_obj.hidden_weights:
+        f.write("%s\n" % item)
+    for item in nn_obj.output_weights:
+        f.write("%s\n" % item)
+    f.close()
