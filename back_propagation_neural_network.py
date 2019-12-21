@@ -5,7 +5,6 @@ Created on Thu Dec 19 14:46:05 2019
 @author: revan
 """
 import numpy as np
-import sys
 class NN:
      def __init__(self,m,l,n):
          self.m = m
@@ -26,7 +25,6 @@ class NN:
          self.hidden_layer_out = self.sigmoid(self.SOP(x, self.hidden_weights))
          output_layer_out = self.sigmoid(self.SOP(self.hidden_layer_out, self.output_weights))
          return output_layer_out
-     
      
      def calc_error(self,actual , out):
          return np.sum((np.subtract(actual, out))**2)/len(out)
@@ -61,12 +59,16 @@ class NN:
          return self.calc_error(y, out)
         
          
-         
-         
+nn_obj = NN(8,10,1)        
+def forward_pass(x,y,Weights):
+    hidden_out = nn_obj.sigmoid(np.dot(x,Weights[0]))
+    output_layer_out = nn_obj.sigmoid(np.dot(hidden_out,Weights[1]))
+    return nn_obj.calc_error(y, output_layer_out)
+    
          
          
 
-nn_obj = NN(8,10,1)
+
 
 
 with open('train.txt') as f:
@@ -83,25 +85,9 @@ with open('train.txt') as f:
             line = [float(i) for i in line]
             x.append(line[0:m])
             y.append(line[m:])
+# normalize output 
 y = y/np.amax(y, axis=0)     
-'''
-predicted = nn_obj.feed_forward(x[0])
-print("before")
-print(nn_obj.output_weights)
-print("hidden >>>>",nn_obj.hidden_weights.shape)
 
-nn_obj.update_weights(x, y, predicted,0.01)
-print("after")
-print(nn_obj.output_weights)
-print("hidden >>>>",nn_obj.hidden_weights.shape)
-
-
-mm = np.random.randn(8)
-mm2 = np.random.randn(10)
-for i in range (8):
-    print(mm[i]*mm2)
-
-'''
 
 
 out = nn_obj.feed_forward(x)
@@ -112,11 +98,14 @@ for i in range(500):
     if(MSE <=0.025):
         break
    
-print("MSE => ",MSE)     
+  
 
-with open('new_weights.txt', 'w') as f:
+with open('in_hidden.txt', 'w') as f:
     for item in nn_obj.hidden_weights:
         f.write("%s\n" % item)
     for item in nn_obj.output_weights:
         f.write("%s\n" % item)
     f.close()
+
+print("MSE for backpropugation => ",MSE)   
+print("MSE for feedforward =>     ",forward_pass(x, y, Weights=[nn_obj.hidden_weights,nn_obj.output_weights]))
